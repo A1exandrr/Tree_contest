@@ -1,4 +1,5 @@
 #pragma once
+
 #include "MemoryManager.h"
 
 // Простейший менеджер памяти, использует ::new и ::delete
@@ -14,6 +15,6 @@ public:
 
     void freeMem(void* ptr)
     {
-        delete[] ptr;
+        delete[] static_cast<char *>(ptr);
     }
 };

@@ -2,7 +2,7 @@
 #include "GroupContainer.h"
 
 // Абстрактный класс: дерево
-class AbstractTree: public Container
+class AbstractTree: public GroupContainer
 {
 public:
     // конструктор
@@ -14,6 +14,8 @@ public:
     class Iterator: public Container::Iterator
     {
     public:
+        ~Iterator() = default;
+
         // Переход к родительской вершине. Возвращает false если текущая вершина - корень или end().
         virtual bool goToParent() = 0;
 
