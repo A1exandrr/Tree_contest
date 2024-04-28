@@ -1,11 +1,10 @@
 #pragma once
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <iostream>
-#include "MemoryManager.h"
 
-using namespace std;
+#include "MemoryManager.h"
 
 // Базовый класс для всех абстрактных контейнеров
 class Container
@@ -27,6 +26,8 @@ public:
     class Iterator
     {
     public:
+        virtual ~Iterator() = default;
+
         // Возврашает явно указатель на элемент, на который указывает итератор в данный момент.
         // Неявно возвращает размер данных.
         // Если итератор показывает за пределы контейнера (например, удален последний элемент), возвращает NULL.
@@ -43,6 +44,7 @@ public:
     };
 
     Container(MemoryManager &mem) : _memory(mem) {}
+    virtual ~Container() = default;
 
     // Функция возвращает значение, равное количеству элементов в контейнере.
     virtual int size() = 0;

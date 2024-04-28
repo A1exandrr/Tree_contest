@@ -1,92 +1,52 @@
 #pragma once
+
 #include <TreeAbstract.h>
 #include <MemoryManager.h>
 
+#include <vector>
+
 class Tree : public AbstractTree
 {
-private:
-    // MemoryManager &_memory;
+    struct Node
+    {
+        Node(std::size_t amountOfChildren);
+
+        std::vector<Node *> children = {};
+        Node *parent = nullptr;
+
+        void *value = nullptr;
+        std::size_t size = 0;
+    };
 
 public:
-    Tree(/* args */);
-    ~Tree();
-
-    // Tree::Container(MemoryManager &mem) : _memory(mem);
-    // Разобраться потом с этимм. Надо реализовать конструктор для контейнера
-
-    //============================= [ Functions ] =============================
-    int insert(Iterator *iter, int child_index, void *elem, size_t size);
-    bool remove(Iterator *iter, int leaf_only);
-    int size();
-    size_t max_bytes();
-    Iterator *find(void *elem, size_t size);
-    Iterator *newIterator();
-    void remove(Iterator *iter);
-    void clear();
-    bool empty();
-    //=========================================================================
-
-public:
-    class TreeIterator : public AbstractTree::Iterator
+    class Iterator: public AbstractTree::Iterator
     {
     public:
-        // constructors
-        TreeIterator();
-        ~TreeIterator();
+        Iterator(Node *node);
+        ~Iterator() = default;
 
-        //============================= [ Functions ] =============================
-        bool goToParent();
-        bool goToChild(int child_index);
+        // From Container::Iterator
         void *getElement(size_t &size);
         bool hasNext();
         void goToNext();
-        bool equal();
-        //=========================================================================
+
+        // From AbstractTree::Iterator
+        bool goToParent();
+        bool goToChild(int child_index);
+
+    private:
+        Node *_node;
     };
 
 public:
-    class TreeDictionary
-    {
+    Tree(MemoryManager &manager, size_t amountOfChildren);
+    ~Tree();
 
-    private:
-        struct TreeNode
-        {
-            vector<TreeNode *> children;
+    // From Container
 
-            int value;
-        };
-        TreeNode *root;
+    // From AbstractTree
 
-    public:
-        typedef TreeNode treeNode;
-
-    public:
-        TreeDictionary(int value)
-        {
-            root = new treeNode();
-            root->value = value;
-        }
-        ~TreeDictionary() {}
-
-        virtual treeNode *CreateNode(int data) = 0;
-        virtual treeNode *InsertNode(treeNode *parent, treeNode *ChildNode, int data) = 0;
-        virtual treeNode *SearchElement(treeNode *parent, treeNode *ChildNode, int data) = 0;
-    };
-
-    // Добавить узконаправленные классы для улучшения итерации по дереву. Написать тесты
-    // реализовтаь свой memorymanager
-    // Tree::Tree(/* args */)
-    // {
-    // }
-
-    // Tree::~Tree()
-    // {
-    // }
-
-    // Tree::TreeIterator::TreeIterator()
-    // {
-    // }
-
-    // Tree::TreeIterator::~TreeIterator()
-    // {
-    // }
+private:
+    const std::size_t _amountOfChildren;
+    Node *_root;
+};

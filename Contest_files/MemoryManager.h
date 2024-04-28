@@ -1,10 +1,12 @@
 #pragma once
+
 #include <stdlib.h>
 
 // Базовый класс менеджера памяти
 class MemoryManager {
 private:
     size_t _size;
+
 public:
     MemoryManager(size_t sz): _size(sz) {}
 

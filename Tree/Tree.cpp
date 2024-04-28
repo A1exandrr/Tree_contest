@@ -1,99 +1,62 @@
 #include <Tree.h>
-#include <iostream>
-#include <stdlib.h>
-#include <vector>
-#include <queue> //необходим для поиска. Реализация позже
 
-using std::cout;
-using std::endl;
+// Tree::Node
 
-static int count = 0;
-
-void element() {} // для передачи в insert.Временная заглушка
-
-int Tree::insert(Iterator *iter, int child_index, void *elem, size_t size)
+Tree::Node::Node(std::size_t amountOfChildren)
 {
-    // реализовать вставку
-    this->iter = iter;
-    child_index = 0;
-    this->size = size;
+    children.reserve(amountOfChildren);
 }
 
-bool Tree::remove(Iterator *iter, int leaf_only)
+// Tree::Iterator
+
+Tree::Iterator::Iterator(Node *node) : _node{ node }
+{}
+
+// From Container::Iterator
+void *Tree::Iterator::getElement(size_t &size)
 {
-    this->iter = iter;
-    this->leaf = leaf_only;
+    if (nullptr == _node)
+        ; // throw
+
+    size = _node->size;
+    return _node->value;
 }
 
-int Tree::size()
+bool Tree::Iterator::hasNext()
 {
-    // реализовать подсчет элементов в контейнере
-    return count;
+    // ? -- не выяснено, как итерируемся
+    return false;
 }
 
-size_t Tree::max_bytes()
+void Tree::Iterator::goToNext()
 {
-    // sizeof(count) / sizeof(*count)
-    return count;
+    // ? -- не выяснено, как итерируемся
 }
 
-Tree::Iterator *Tree::find(void *elem, size_t size)
+// From AbstractTree::Iterator
+bool Tree::Iterator::goToParent()
 {
-    // создать динамеческий локальный итератор указывающий на первый найденный элемент.
-    // Удаление пользователем delete
-    return 0;
+    if (nullptr == _node)
+        ; // throw
+
+    if (nullptr == _node->parent)
+        return false;
+
+    Node *parent = _node->parent;
+    _node = parent;
+    return true;
 }
 
-Tree::Iterator *Tree::newIterator()
+bool Tree::Iterator::goToChild(int child_index)
 {
-    // связана с функцией высше. Указывает на первый элемент. Аналогичная процедура удаления
+    if (nullptr == _node)
+        ; // throw
+
+    if (_node->children.size() < child_index)
+        return false;
+
+    Node *child = _node->children[child_index];
+    _node = child;
+    return true;
 }
 
-void Tree::remove(Iterator *iter)
-{
-    // удаление элемента. Next указывает на следующий элемент
-}
-
-void Tree::clear() {}
-
-bool Tree::empty() {}
-
-// Реализация методов вложенного класса
-
-bool Tree::TreeIterator::goToParent() {}
-bool Tree::TreeIterator::goToChild(int child_index) {}
-void (Tree::TreeIterator::*getElement)(size_t &size) {}
-bool Tree::TreeIterator::hasNext() {}
-void Tree::TreeIterator::goToNext() {}
-bool Tree::TreeIterator::equal() {}
-
-// переделать
-Tree::TreeDictionary::treeNode *CreateNode(int data)
-{
-
-    Tree::TreeDictionary::treeNode *parent_node = new Tree::TreeDictionary::treeNode;
-    if (parent_node)
-        parent_node->value = data;
-    else
-        cout << "Error" << endl;
-    return parent_node;
-}
-
-Tree::TreeDictionary::treeNode *InsertNode(Tree::TreeDictionary::treeNode *parent, Tree::TreeDictionary::treeNode *ChildNode, int data)
-{
-    if (parent == NULL)
-        ChildNode = CreateNode(data);
-    else
-    {
-        Tree::TreeDictionary::treeNode *childNode = CreateNode(data);
-        parent->children.push_back(childNode);
-        return childNode;
-    }
-    return ChildNode;
-}
-
-Tree::TreeDictionary::treeNode *SearchElement(Tree::TreeDictionary::treeNode *NextNode, int *data)
-{
-    // Реализовать или поиск(глубину или ширину)
-    return NextNode;
-}
