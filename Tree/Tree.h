@@ -9,8 +9,6 @@ class Tree : public AbstractTree
 {
     struct Node
     {
-        Node(std::size_t amountOfChildren);
-
         std::vector<Node *> children = {};
         Node *parent = nullptr;
 
@@ -40,7 +38,7 @@ public:
     };
 
 public:
-    Tree(MemoryManager &manager, size_t amountOfChildren);
+    Tree(MemoryManager &manager);
     ~Tree();
 
     // From Container
@@ -57,7 +55,6 @@ public:
     bool remove(AbstractTree::Iterator *iter, int leaf_only);
 
 private:
-    const std::size_t _amountOfChildren;
     // количество детей заведомо неизвественно
     Node *_root;
 };
