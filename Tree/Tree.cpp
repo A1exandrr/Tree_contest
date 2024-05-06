@@ -58,5 +58,5 @@ bool Tree::Iterator::goToChild(int child_index)
     Node *child = _node->children[child_index];
     _node = child;
     return true;
-}
+}.
 
