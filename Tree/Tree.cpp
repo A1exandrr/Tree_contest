@@ -12,7 +12,7 @@ Tree::Node::Node(std::size_t amountOfChildren)
 Tree::Iterator::Iterator(Node *node) : _node{ node }
 {}
 
-// From Container::Iterator
+// From     Container::Iterator
 void *Tree::Iterator::getElement(size_t &size)
 {
     if (nullptr == _node)
