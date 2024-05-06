@@ -53,3 +53,8 @@ bool Tree::Iterator::goToChild(int child_index)
     _node = child;
     return true;
 }
+
+/*
+Сделать insert и remove
+size как дополнение
+*/

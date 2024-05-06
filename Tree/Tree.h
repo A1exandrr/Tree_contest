@@ -36,7 +36,7 @@ public:
     private:
         Node *_node;
     };
-
+    // Exceptions classes
     class NotAvailable : public Container::Error
     {
     public:
@@ -48,7 +48,6 @@ public:
     public:
         InvalidIterator() : Container::Error{"Iterator is not valid"} {}
     };
-    
 
 public:
     Tree(MemoryManager &manager);
