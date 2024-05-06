@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/Tree_contest.tests.dir/main.cpp.o -o Tree_contest.tests  ../Tree/libTree_contest.Tree.a

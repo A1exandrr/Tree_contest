@@ -1,0 +1,2 @@
+/usr/bin/ar qc libTree_contest.Tree.a CMakeFiles/Tree_contest.Tree.dir/Tree.cpp.o
+/usr/bin/ranlib libTree_contest.Tree.a

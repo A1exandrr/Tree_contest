@@ -19,16 +19,30 @@ class Tree : public AbstractTree
     };
 
 public:
-    class Iterator: public AbstractTree::Iterator
+    class Iterator : public AbstractTree::Iterator
     {
     public:
         Iterator(Node *node);
         ~Iterator() = default;
 
+        // From Container
+        int size();
+        size_t max_bytes();
+        Iterator *find(void *elem, size_t size);
+        Iterator *newIterator();
+        void remove(Iterator *iter);
+        void clear();
+        void empty();
+
         // From Container::Iterator
         void *getElement(size_t &size);
         bool hasNext();
         void goToNext();
+        bool equals(Iterator *right);
+
+        // From AbstractTree
+        int insert(Iterator *iter, int child_index, void *elem, size_t size);
+        bool remove(Iterator *iter, int leaf_only);
 
         // From AbstractTree::Iterator
         bool goToParent();
@@ -40,7 +54,7 @@ public:
 
 public:
     Tree(MemoryManager &manager, size_t amountOfChildren);
-    ~Tree();
+    ~Tree();    
 
     // From Container
 
@@ -48,5 +62,6 @@ public:
 
 private:
     const std::size_t _amountOfChildren;
+    //количество детей заведомо неизвественно
     Node *_root;
 };
