@@ -29,7 +29,7 @@ public:
         void *getElement(size_t &size);
         bool hasNext();
         void goToNext();
-        bool equals(Iterator *right);
+        bool equals(Container::Iterator *right);
 
         // From AbstractTree::Iterator
         bool goToParent();
@@ -48,13 +48,13 @@ public:
     size_t max_bytes();
     Iterator *find(void *elem, size_t size);
     Iterator *newIterator();
-    void remove(Iterator *iter);
+    void remove(Container::Iterator *iter);
     void clear();
     bool empty();
 
     // From AbstractTree
-    int insert(Iterator *iter, int child_index, void *elem, size_t size);
-    bool remove(Iterator *iter, int leaf_only);
+    int insert(AbstractTree::Iterator *iter, int child_index, void *elem, size_t size);
+    bool remove(AbstractTree::Iterator *iter, int leaf_only);
 
 private:
     const std::size_t _amountOfChildren;
