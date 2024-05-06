@@ -13,7 +13,7 @@ class Tree : public AbstractTree
         Node *parent = nullptr;
 
         void *value = nullptr;
-        std::size_t size = 0;
+        std::size_t amount = 0;
     };
 
 public:
@@ -36,6 +36,19 @@ public:
     private:
         Node *_node;
     };
+
+    class NotAvailable : public Container::Error
+    {
+    public:
+        NotAvailable() : Container::Error{"Element is not available"} {}
+    };
+
+    class InvalidIterator : public Container::Error
+    {
+    public:
+        InvalidIterator() : Container::Error{"Iterator is not valid"} {}
+    };
+    
 
 public:
     Tree(MemoryManager &manager);

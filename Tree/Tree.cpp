@@ -1,24 +1,18 @@
 #include <Tree.h>
 
-// Tree::Node
-
-Tree::Node::Node(std::size_t amountOfChildren)
-{
-    children.reserve(amountOfChildren);
-}
-
 // Tree::Iterator
 
-Tree::Iterator::Iterator(Node *node) : _node{ node }
-{}
+Tree::Iterator::Iterator(Node *node) : _node{node}
+{
+}
 
-// From     Container::Iterator
-void *Tree::Iterator::getElement(size_t &size)
+// From Container::Iterator
+void *Tree::Iterator::getElement(size_t &amount)
 {
     if (nullptr == _node)
-        ; // throw
+        throw NotAvailable{};
 
-    size = _node->size;
+    amount = _node->amount;
     return _node->value;
 }
 
@@ -37,7 +31,7 @@ void Tree::Iterator::goToNext()
 bool Tree::Iterator::goToParent()
 {
     if (nullptr == _node)
-        ; // throw
+        throw InvalidIterator{};
 
     if (nullptr == _node->parent)
         return false;
@@ -50,7 +44,7 @@ bool Tree::Iterator::goToParent()
 bool Tree::Iterator::goToChild(int child_index)
 {
     if (nullptr == _node)
-        ; // throw
+        throw InvalidIterator{};
 
     if (_node->children.size() < child_index)
         return false;
@@ -59,4 +53,3 @@ bool Tree::Iterator::goToChild(int child_index)
     _node = child;
     return true;
 }
-
