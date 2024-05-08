@@ -32,6 +32,9 @@ public:
         // From AbstractTree::Iterator
         bool goToParent();
         bool goToChild(int child_index);
+        Node *getCurrentNode(){
+            return _node;
+        }
 
     private:
         Node *_node;
@@ -49,6 +52,8 @@ public:
         InvalidIterator() : Container::Error{"Iterator is not valid"} {}
     };
 
+
+
 public:
     Tree(MemoryManager &manager);
     ~Tree();
@@ -65,7 +70,7 @@ public:
     // From AbstractTree
     int insert(AbstractTree::Iterator *iter, int child_index, void *elem, size_t size);
     bool remove(AbstractTree::Iterator *iter, int leaf_only);
-
+    
 private:
     // количество детей заведомо неизвественно
     Node *_root;
