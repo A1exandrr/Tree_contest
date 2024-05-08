@@ -1,8 +1,0 @@
-# ninja log v6
-2	255	1715192394872485706	Tests/CMakeFiles/Tree_contest.tests.dir/main.cpp.o	96aa36008058df36
-1	231	1715192406115718004	Tree/CMakeFiles/Tree_contest.Tree.dir/Tree.cpp.o	2b6dd0ca7d854a79
-231	274	1715192406345715937	Tree/libTree_contest.Tree.a	318ace04b88d7335
-274	383	1715192406389048882	Tests/Tree_contest.tests	6f1660fd210f065d
-1	227	1715192435588786616	Tree/CMakeFiles/Tree_contest.Tree.dir/Tree.cpp.o	2b6dd0ca7d854a79
-227	283	1715192435815451248	Tree/libTree_contest.Tree.a	318ace04b88d7335
-283	392	1715192435868784102	Tests/Tree_contest.tests	6f1660fd210f065d
