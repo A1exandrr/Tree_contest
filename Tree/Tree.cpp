@@ -54,6 +54,45 @@ bool Tree::Iterator::goToChild(int child_index)
     return true;
 }
 
+// Tree
+Tree::Tree(MemoryManager &manager) : AbstractTree{ manager }, _root{ nullptr }, _size{ 0 }
+{}
+
+Tree::~Tree()
+{
+    // TODO
+}
+
+// From Container
+int Tree::size()
+{
+    return _size;
+}
+
+size_t Tree::max_bytes() // ???
+{}
+
+Tree::Iterator *Tree::find(void *elem, size_t size)
+{}
+
+Tree::Iterator *Tree::newIterator()
+{
+    return new Iterator{ _root };
+}
+
+void Tree::remove(Container::Iterator *iter)
+{
+    delete iter;
+}
+
+void Tree::clear()
+{}
+
+bool Tree::empty()
+{
+    return size() == 0;
+}
+
 // From AbstactTree
 int Tree::insert(AbstractTree::Iterator *iter, int child_index, void *elem, size_t size)
 {
@@ -70,12 +109,22 @@ int Tree::insert(AbstractTree::Iterator *iter, int child_index, void *elem, size
     if(node->children.size() < child_index){
         node->children.resize(child_index, nullptr);
     }
+
+    Node *newNode = static_cast<Node *>(this->_memory.allocMem(sizeof(Node)));
+    newNode->parent = node;
+    node->value = this->_memory.allocMem(size);
+    ::memcpy(node->value, elem, size);
+    node->amount = size;
+
     auto children_iterator = node->children.begin() + child_index;
     if(nullptr == *children_iterator){
-        Node *newNode = static_cast<Node *>(this->_memory.allocMem(sizeof(Node)));
         *children_iterator = newNode;
-        // children_iterator
+    } else {
+        node->children.insert(children_iterator, newNode);
     }
+
+    ++_size;
+
     return 0;
 }
 

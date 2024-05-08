@@ -74,4 +74,5 @@ public:
 private:
     // количество детей заведомо неизвественно
     Node *_root;
+    int _size;
 };
