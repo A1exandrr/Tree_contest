@@ -9,11 +9,13 @@ class Tree : public AbstractTree
 {
     struct Node
     {
-        std::vector<Node *> children = {};
+        std::vector<Node *> children = {1, nullptr};
         Node *parent = nullptr;
 
         void *value = nullptr;
         std::size_t amount = 0;
+
+        void removeChildren(MemoryManager &manager);
     };
 
 public:
@@ -59,20 +61,20 @@ public:
     ~Tree();
 
     // From Container
-    int size();
-    size_t max_bytes();
-    Iterator *find(void *elem, size_t size);
-    Iterator *newIterator();
-    void remove(Container::Iterator *iter);
-    void clear();
-    bool empty();
+    int size() override;
+    size_t max_bytes() override;
+    Iterator *find(void *elem, size_t size) override;
+    Iterator *newIterator() override;
+    void remove(Container::Iterator *iter) override;
+    void clear() override;
+    bool empty() override;
 
-    // From AbstractTree
-    int insert(AbstractTree::Iterator *iter, int child_index, void *elem, size_t size);
-    bool remove(AbstractTree::Iterator *iter, int leaf_only);
-    
+    // From AbstractTree``
+    int insert(AbstractTree::Iterator *iter, int child_index, void *elem, size_t size) override;
+    bool remove(AbstractTree::Iterator *iter, int leaf_only) override;
+
 private:
     // количество детей заведомо неизвественно
-    Node *_root;
+    Node _root;
     int _size;
 };
