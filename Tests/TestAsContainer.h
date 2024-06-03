@@ -16,8 +16,7 @@ private:
     bool find();
     bool newIterator();
     bool remove();
-    // bool clear(); // пропущено, так как оттестировано и активно используется
-    // bool empty(); // в контейнере происходит подсчёт напрямую
+    bool traverse();
 
     bool _testResult = true;
 };
