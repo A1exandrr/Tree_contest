@@ -69,6 +69,7 @@ bool Tree::Node::isLeaf()
 size_t Tree::Node::indexOfNextChild(Node *node)
 {
     size_t index = 0;
+
     std::vector<Node *>::iterator it = children.begin();
     // Ищем текущий узел
     for (; it != children.end() && *it != node; ++it, ++index)
@@ -128,12 +129,14 @@ void *Tree::Iterator::getElement(size_t &amount)
 
 bool Tree::Iterator::hasNext()
 {
-    if (nullptr == _node)
+    if ((nullptr == _node) || (_root == _node))
         return false;
 
     size_t index = _node->parent->indexOfNextChild(_node);
     if ((_root == _node->parent) && (std::numeric_limits<size_t>::max() == index))
         return false;
+    // if (_node->parent->children[index] == _node)
+    //     return false;
 
     return true;
 }
@@ -335,6 +338,9 @@ bool Tree::remove(AbstractTree::Iterator *iter, int leaf_only)
         return false;
     }
 
+    if (empty() || (&_root == inputIterator->getCurrentNode()))
+        return false;
+
     Node *node = inputIterator->getCurrentNode();
     if (nullptr == node)
         throw InvalidIterator{};
@@ -344,7 +350,9 @@ bool Tree::remove(AbstractTree::Iterator *iter, int leaf_only)
         return false;
 
     // Даже если удалится узел с потомками, итератор перескочит на соседний
-    inputIterator->goToNext();
+    bool hasNext = inputIterator->hasNext();
+    if (hasNext)
+        inputIterator->goToNext();
 
     if (!isLeaf)
         _size -= node->removeChildren(_memory);
@@ -353,8 +361,8 @@ bool Tree::remove(AbstractTree::Iterator *iter, int leaf_only)
     std::vector<Node *> &parentChildren = node->parent->children;
     std::vector<Node *>::const_iterator itChild = parentChildren.cbegin();
     for (; itChild != parentChildren.end() && *itChild != node; ++itChild)
-    {
-    }
+    {}
+
     // Исключительная ситуация
     if (itChild == parentChildren.end())
         throw InvalidIterator{};
@@ -369,6 +377,22 @@ bool Tree::remove(AbstractTree::Iterator *iter, int leaf_only)
     node->~Node();
     _memory.freeMem(node);
     --_size;
+
+    // Если удалили последний элемент, ищем другой последний элемент
+    if (!hasNext)
+    {
+        // reverse_iterator -- итератор, идущий от последнего элемента к первому
+        // rbegin()/rend() возвращают, соответственно, реверсивный начальный и конечный итераторы
+        for (std::vector<Node *>::reverse_iterator it = _root.children.rbegin();
+                it != _root.children.rend(); ++it)
+        {
+            if (*it != nullptr)
+            {
+                new (inputIterator) Iterator{&_root, *it}; // пересоздаём итератор по адресу старого
+                break;
+            }
+        }
+    }
 
     return true;
 }

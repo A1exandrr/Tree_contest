@@ -49,6 +49,14 @@ void TestAsContainer::run()
     }
     std::cout << currentFunction << ": TestAsContainer::remove() success" << std::endl;
 
+    if (false == traverse())
+    {
+        std::cout << currentFunction << ": TestAsContainer::traverse() failed" << std::endl;
+        _testResult = false;
+        return;
+    }
+    std::cout << currentFunction << ": TestAsContainer::traverse() success" << std::endl;
+
     std::cout << currentFunction << ": end" << std::endl;
 }
 
@@ -59,6 +67,16 @@ bool TestAsContainer::result()
 
 // private
 
+// Ниже контейнер заполняется следующим образом
+// номера -- индекс при проходе по дереву:
+//
+//       -------------- root -----------------
+//      /         /       |        \          \
+//     /         /        |         \          \
+//    4         8        12         16         20
+//  / | \     / | \     / | \      / | \      / | \
+// 1  2  3   5  6  7   9 10 11   13 14 15   17 18 19
+//
 void TestAsContainer::fillContainer()
 {
     // Для дочерних вершин первого слоя -- пять элементов
@@ -205,22 +223,214 @@ bool TestAsContainer::find()
 
 bool TestAsContainer::newIterator()
 {
+    const char *currentFunction = "    TestAsContainer::newIterator()";
+
+    Container &container = this->container();
+
     // Получить итератор пустого контейнера
+    Container::Iterator *iteratorFromEmptyContainer = container.newIterator();
+    if (true == iteratorFromEmptyContainer->hasNext())
+    {
+        delete iteratorFromEmptyContainer;
+        std::cout << currentFunction << ": Iterator from empty container can traversing. It's wrong"
+                << std::endl;
+        return false;
+    }
+    delete iteratorFromEmptyContainer;
+
+    fillContainer();
 
     // Получить итератор непустого контейнера и проверить, что значение там то
+    Container::Iterator *iterator = container.newIterator();
+    // Первый ли элемент?
+    TestData first;
+    first.i = 1000;
+    first.c[0] = 100;
+    first.c[1] = 10;
+    size_t dataSize = 0;
+    void *dataValue = iterator->getElement(dataSize);
+    if ((dataValue == nullptr) || (dataSize != sizeof(TestData)))
+    {
+        delete iterator;
+        std::cout << currentFunction << ": Iterator doesn't have any data (first)"
+                << std::endl;
+        return false;
+    }
+    if (0 != ::memcmp(dataValue, &first, sizeof(TestData)))
+    {
+        delete iterator;
+        std::cout << currentFunction << ": First data doesn't equal iterator's data"
+                << std::endl;
+        return false;
+    }
 
+    // Есть ли следующий?
+    if (false == iterator->hasNext())
+    {
+        delete iterator;
+        std::cout << currentFunction << ": Iterator doesn't have next node"
+                << std::endl;
+        return false;
+    }
+
+    // Переходим на следующий
+    iterator->goToNext();
+
+    // Совпадает ли следующий?
+    TestData second;
+    second.i = 2000;
+    second.c[0] = 200;
+    second.c[1] = 20;
+    dataValue = iterator->getElement(dataSize);
+    if ((dataValue == nullptr) || (dataSize != sizeof(TestData)))
+    {
+        delete iterator;
+        std::cout << currentFunction << ": Iterator doesn't have any data (second)"
+                << std::endl;
+        return false;
+    }
+    if (0 != ::memcmp(dataValue, &second, sizeof(TestData)))
+    {
+        delete iterator;
+        std::cout << currentFunction << ": Seond data doesn't equal iterator's data"
+                << std::endl;
+        return false;
+    }
+
+    delete iterator;
+    container.clear();
     return true;
 }
 
 bool TestAsContainer::remove()
 {
+     const char *currentFunction = "    TestAsContainer::remove()";
+
+   Container &container = this->container();
+
     // Удалить узел из пустого контейнера
+    Container::Iterator *iteratorFromEmptyContainer = container.newIterator();
+    container.remove(iteratorFromEmptyContainer); // Ничего не будет просходить
+    delete iteratorFromEmptyContainer;
+
+    fillContainer();
+    Container::Iterator *iterator = container.newIterator();
+    size_t size = container.size();
 
     // Удалить первый
+    container.remove(iterator);
+    size_t currentSize = container.size();
+    if (currentSize != (size - 1))
+    {
+        std::cout << currentFunction << ": First node didn't remove" << std::endl;
+        return false;
+    }
 
-    // Удалить средний
+    // Удалить средние
+    for (size_t i = 0; i < 4; ++i, iterator->goToNext()) // по старой структуре 5-й элемент
+    {}
+    container.remove(iterator);
+    currentSize = container.size();
+    if (currentSize != (size - 2))
+    {
+        return false;
+    }
+    for (size_t i = 0; i < 5; ++i, iterator->goToNext()) // по старой структуре 12-й элемент
+    {}
+    container.remove(iterator);
+    currentSize = container.size();
+    if (currentSize != (size - 6))
+    {
+        return false;
+    }
 
     // Удалить последний
+    for (; iterator->hasNext(); iterator->goToNext())
+    {}
+    // Последний узел не является листом, и удалён весь узел с дочерними узлами
+    // Итератор будет указывать на следующий последний узел
+    container.remove(iterator);
+    currentSize = container.size();
+    if (currentSize != (size - 10))
+    {
+        return false;
+    }
 
+    delete iterator;
+    container.clear();
+    return true;
+}
+
+bool TestAsContainer::traverse()
+{
+    const char *currentFunction = "    TestAsContainer::traverse()";
+
+    Container &container = this->container();
+
+    // Проход по пустому контейнеру
+    // если iterator->hasNext() == false, то и идти не будет
+
+    // Заполняем контейнер
+    fillContainer();
+
+    // Подготовка данных для сравнения
+    // первый слой
+    TestData testDataFirstLevel[5];
+    for (size_t i = 0; i < 5; ++i)
+    {
+        testDataFirstLevel[i].i = 100 * (i + 1);
+        testDataFirstLevel[i].c[0] = 10 * (i + 1);
+        testDataFirstLevel[i].c[1] = 5 * (i + 1);
+    }
+
+    // Второй слой
+    TestData testDataSecondLevel[15];
+    for (size_t i = 0; i < 15; ++i)
+    {
+        testDataSecondLevel[i].i = 1000 * (i + 1);
+        testDataSecondLevel[i].c[0] = 100 * (i + 1);
+        testDataSecondLevel[i].c[1] = 10 * (i + 1);
+    }
+
+    // Компиляция -- референсные данные
+    TestData testData[20];
+    for (size_t i = 0; i < 20;) // работает как while() с автовыходом по условию
+    {
+        for (size_t j = 0; j < 5; ++j)
+        {
+            for (size_t k = 0; k < 3; ++k)
+            {
+                testData[i++] = testDataSecondLevel[(j * 3) + k];
+            }
+            testData[i++] = testDataFirstLevel[j];
+        }
+    }
+
+    // Проход по заполненному контейнеру и проверка с рефересными данными
+    Container::Iterator *iterator = container.newIterator();
+    for (size_t i = 0; (i < 20) && iterator->hasNext(); ++i, iterator->goToNext())
+    {
+        size_t dataSize = 0;
+        void *dataValue = iterator->getElement(dataSize);
+        if ((dataValue == nullptr) || (dataSize != sizeof(TestData)))
+        {
+            delete iterator;
+            std::cout << currentFunction << ": Iterator doesn't have any data"
+                    << std::endl;
+            return false;
+        }
+        TestData &iteratorData = *static_cast<TestData *>(dataValue);
+        TestData &currentData = testData[i];
+        if (iteratorData != currentData)
+        {
+            delete iterator;
+            std::cout << currentFunction << ": Test data doesn't equal iterator's data"
+                    << std::endl;
+            return false;
+        }
+    }
+
+    delete iterator;
+    container.clear();
     return true;
 }
